@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.12.12"
 dependencies = [
     "alembic>=1.18.4",
+    "fastapi[standard]>=0.136.3",
+    "pre-commit>=4.6.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
     "pytest>=9.0.3",
     "ruff>=0.15.14",
 ]
@@ -15,7 +19,7 @@ target-version = "py312"
 line-length = 120
 include = [
     "src/app/**/*.py",
-    "src/test/**/*.py",
+    "src/tests/**/*.py",
 ]
 extend-exclude = [
     "alembic",
@@ -32,7 +36,7 @@ select = [
 
 [tool.pytest.ini_options]
 testpaths = [
-    "src/test/unit",
+    "src/tests",
 ]
 markers = [
     "integration: tests that require a real PostgreSQL database",
