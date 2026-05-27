@@ -3,8 +3,8 @@ from uuid import UUID, uuid4
 from dataclasses import dataclass
 from typing import Self
 
+from src.app.domain.models.runtime.entities.runtime_resource_id import RuntimeResourceId
 from src.app.domain.models.runtime.enum import RuntimeStatus
-from src.app.exceptions import DomainValidationError
 
 
 @dataclass
@@ -13,7 +13,7 @@ class Runtime:
     runtime_status:RuntimeStatus
     created_at:datetime
     expires_at:datetime
-    runtime_resource_id:str | None = None
+    runtime_resource_id:RuntimeResourceId | None = None
 
     @classmethod
     def new(cls) -> Self:
@@ -25,12 +25,8 @@ class Runtime:
             expires_at=utc_now + timedelta(minutes=30)
         )
 
-    def set_runtime_resource_id(self, runtime_resource_id:str) -> None:
-        if isinstance(runtime_resource_id, str) and runtime_resource_id.strip():
-            self.runtime_resource_id = runtime_resource_id
-            return
-        raise DomainValidationError("set invalid runtime resource id")
-
+    def set_runtime_resource_id(self, runtime_resource_id:RuntimeResourceId) -> None:
+        self.runtime_resource_id = runtime_resource_id
 
     def is_expired(self) -> bool:
         return self.expires_at <= datetime.now(tz=timezone.utc)

@@ -1,6 +1,8 @@
-from src.app.exceptions.exceptions import DomainError, DomainValidationError
+from src.app.exceptions.exceptions import DomainError, DomainValidationError, InfraError, RuntimeResourceError
 
 __all__ = [
     "DomainError",
-    "DomainValidationError"
+    "DomainValidationError",
+    "InfraError",
+    "RuntimeResourceError",
 ]
