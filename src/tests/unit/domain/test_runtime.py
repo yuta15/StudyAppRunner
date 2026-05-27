@@ -48,6 +48,51 @@ def test_set_runtime_resource_id_success_accept_non_blank_value(
     assert runtime.runtime_resource_id == runtime_resource_id
 
 
+def test_set_runtime_resource_id_success_convert_str_to_runtime_resource_id(
+    runtime: Runtime,
+    runtime_resource_id_value: str,
+) -> None:
+    """str の runtime_resource_id を RuntimeResourceId に変換して Runtime に設定できることを確認する。"""
+    runtime.set_runtime_resource_id(runtime_resource_id_value)
+
+    assert runtime.runtime_resource_id == RuntimeResourceId(runtime_resource_id_value)
+
+
+@pytest.mark.parametrize("invalid_runtime_resource_id", ["", " ", "  ", "\t", "\n"])
+def test_set_runtime_resource_id_failure_reject_blank_str(
+    runtime: Runtime,
+    runtime_resource_id: RuntimeResourceId,
+    invalid_runtime_resource_id: str,
+) -> None:
+    """空文字または空白のみの str は RuntimeResourceId として Runtime に設定できないことを確認する。"""
+    runtime.set_runtime_resource_id(runtime_resource_id)
+
+    with pytest.raises(DomainValidationError):
+        runtime.set_runtime_resource_id(invalid_runtime_resource_id)
+
+    assert runtime.runtime_resource_id == runtime_resource_id
+
+
+def test_runtime_success_convert_str_runtime_resource_id_on_init(
+    runtime_factory: Callable[..., Runtime],
+    runtime_resource_id_value: str,
+) -> None:
+    """str の runtime_resource_id で Runtime を作成しても RuntimeResourceId として保持されることを確認する。"""
+    runtime = runtime_factory(runtime_resource_id=runtime_resource_id_value)
+
+    assert runtime.runtime_resource_id == RuntimeResourceId(runtime_resource_id_value)
+
+
+def test_runtime_resource_id_success_convert_str_on_assignment(
+    runtime: Runtime,
+    runtime_resource_id_value: str,
+) -> None:
+    """str の runtime_resource_id を直接設定しても RuntimeResourceId として保持されることを確認する。"""
+    runtime.runtime_resource_id = runtime_resource_id_value
+
+    assert runtime.runtime_resource_id == RuntimeResourceId(runtime_resource_id_value)
+
+
 def test_runtime_resource_id_success_create_with_non_blank_value(runtime_resource_id_value: str) -> None:
     """空白のみではない値で RuntimeResourceId を作成できることを確認する。"""
     runtime_resource_id = RuntimeResourceId(runtime_resource_id_value)

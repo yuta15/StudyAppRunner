@@ -43,7 +43,7 @@ def runtime_factory() -> Callable[..., Runtime]:
         runtime_status: RuntimeStatus = RuntimeStatus.CREATING,
         created_at: datetime | None = None,
         expires_at: datetime | None = None,
-        runtime_resource_id: RuntimeResourceId | None = None,
+        runtime_resource_id: RuntimeResourceId | str | None = None,
     ) -> Runtime:
         created_at = created_at or datetime.now(tz=timezone.utc)
         return Runtime(
