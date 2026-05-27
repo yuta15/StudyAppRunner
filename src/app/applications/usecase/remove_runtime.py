@@ -36,6 +36,9 @@ class RemoveRuntime:
         return runtime.runtime_resource_id
 
     def _start_runtime_removal(self, runtime: Runtime) -> None:
+        if runtime.runtime_status == RuntimeStatus.STOPPING:
+            return
+
         if runtime.runtime_status != RuntimeStatus.RUNNING:
             raise DomainValidationError("runtime is not running")
 

@@ -39,6 +39,33 @@ def test_exec_success_remove_runtime_resource_and_update_runtime_status(
     assert response.runtime_id == runtime.runtime_id
 
 
+def test_exec_success_remove_stopping_runtime_resource_and_update_runtime_status(
+    db_session_stub: object,
+    runtime_factory: Callable[..., Runtime],
+    runtime_resource_id: RuntimeResourceId,
+) -> None:
+    """STOPPING の Runtime を再実行で削除し、STOPPED として保存することを確認する。"""
+    runtime = runtime_factory(runtime_status=RuntimeStatus.STOPPING, runtime_resource_id=runtime_resource_id)
+    runtime_repository = MagicMock(spec=RuntimeRepository)
+    runtime_repository.get.return_value = runtime
+    runtime_adapter = MagicMock(spec=RuntimePort)
+    saved_statuses: list[RuntimeStatus] = []
+    runtime_repository.save.side_effect = lambda runtime: saved_statuses.append(runtime.runtime_status)
+    usecase = RemoveRuntime(
+        session=db_session_stub,
+        dependencies=RemoveRuntimeDependencies(
+            runtime_adapter=runtime_adapter,
+            runtime_repository=runtime_repository,
+        ),
+    )
+
+    response = usecase.exec(runtime_id=runtime.runtime_id)
+
+    runtime_adapter.remove_runtime.assert_called_once_with(runtime_resource_id=runtime_resource_id)
+    assert saved_statuses == [RuntimeStatus.STOPPED]
+    assert response.runtime_id == runtime.runtime_id
+
+
 def test_exec_failure_mark_runtime_failed_when_runtime_resource_removal_fails(
     db_session_stub: object,
     runtime_factory: Callable[..., Runtime],

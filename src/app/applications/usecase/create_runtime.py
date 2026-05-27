@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from sqlmodel import Session as DBSession
 
 from src.app.applications.usecase.dependencies import CreateRuntimeDependencies
@@ -18,11 +20,11 @@ class CreateRuntime:
 
         try:
             self._create_runtime_resource(runtime=runtime)
+            self._save_runtime(runtime=runtime)
         except Exception:
+            self._remove_runtime_resource_if_created(runtime=runtime)
             self._fail_runtime_creation(runtime=runtime, session=session)
             raise
-
-        self._save_runtime(runtime=runtime)
 
         return CreateRuntimeResponse(session_id=session.session_id, runtime_id=runtime.runtime_id)
 
@@ -35,6 +37,13 @@ class CreateRuntime:
         runtime.to_failed()
         session.to_inactive()
         self._save_runtime_and_session(runtime=runtime, session=session)
+
+    def _remove_runtime_resource_if_created(self, runtime: Runtime) -> None:
+        if runtime.runtime_resource_id is None:
+            return
+
+        with suppress(Exception):
+            self._dependencies.runtime_adapter.remove_runtime(runtime_resource_id=runtime.runtime_resource_id)
 
     def _save_runtime(self, runtime: Runtime) -> None:
         with self._session.begin():
