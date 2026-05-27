@@ -9,3 +9,9 @@ class CreateRuntimeDependencies:
     runtime_adapter: RuntimePort
     runtime_repository: RuntimeRepository
     session_repository: SessionRepository
+
+
+@dataclass
+class RemoveRuntimeDependencies:
+    runtime_adapter: RuntimePort
+    runtime_repository: RuntimeRepository

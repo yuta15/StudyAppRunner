@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = "==3.12.12"
 dependencies = [
     "alembic>=1.18.4",
+    "docker>=7.1.0",
     "fastapi[standard]>=0.136.3",
     "pre-commit>=4.6.0",
     "pydantic>=2.13.4",
@@ -36,9 +37,12 @@ select = [
 ]
 
 [tool.pytest.ini_options]
+pythonpath = [
+    ".",
+]
 testpaths = [
     "src/tests",
 ]
 markers = [
-    "integration: tests that require a real PostgreSQL database",
+    "integration: tests that require external services such as PostgreSQL or Docker",
 ]
